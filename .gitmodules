@@ -1,3 +1,0 @@
-[submodule "debian/modules/nginx-auth-ldap"]
-	path = debian/modules/nginx-auth-ldap
-	url = https://github.com/kvspb/nginx-auth-ldap.git
