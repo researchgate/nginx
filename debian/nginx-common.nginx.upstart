@@ -13,4 +13,4 @@ end script
 
 exec /usr/sbin/nginx -g 'daemon on; master_process on;'
 
-pre-stop exec /usr/sbin/nginx -s quit
+pre-stop exec /usr/sbin/nginx -s stop
