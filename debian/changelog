@@ -4,7 +4,7 @@ nginx (1.9.11-1+rg1ubuntu2) trusty; urgency=medium
   * Update lua module to 0.10.0 and merged fix for 1.9.11 mentioned:
     https://github.com/openresty/lua-nginx-module/pull/669/files
 
- -- Eric Webster <webster@off-ci-02-ber.rgoffice.net>  Thu, 11 Feb 2016 16:31:13 +0000
+ -- Eric Webster <sophomeric@gmail.com>  Thu, 11 Feb 2016 16:31:13 +0000
 
 nginx (1.9.7-1+rg4) trusty; urgency=medium
 
