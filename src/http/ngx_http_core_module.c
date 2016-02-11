@@ -776,7 +776,7 @@ ngx_module_t  ngx_http_core_module = {
 };
 
 
-ngx_str_t  ngx_http_core_get_method = { 3, (u_char *) "GET " };
+ngx_str_t  ngx_http_core_get_method = { 3, (u_char *) "GET" };
 
 
 void
@@ -2968,12 +2968,12 @@ ngx_http_core_server(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
         return NGX_CONF_ERROR;
     }
 
-    for (i = 0; ngx_modules[i]; i++) {
-        if (ngx_modules[i]->type != NGX_HTTP_MODULE) {
+    for (i = 0; cf->cycle->modules[i]; i++) {
+        if (cf->cycle->modules[i]->type != NGX_HTTP_MODULE) {
             continue;
         }
 
-        module = ngx_modules[i]->ctx;
+        module = cf->cycle->modules[i]->ctx;
 
         if (module->create_srv_conf) {
             mconf = module->create_srv_conf(cf);
@@ -2981,7 +2981,7 @@ ngx_http_core_server(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
                 return NGX_CONF_ERROR;
             }
 
-            ctx->srv_conf[ngx_modules[i]->ctx_index] = mconf;
+            ctx->srv_conf[cf->cycle->modules[i]->ctx_index] = mconf;
         }
 
         if (module->create_loc_conf) {
@@ -2990,7 +2990,7 @@ ngx_http_core_server(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
                 return NGX_CONF_ERROR;
             }
 
-            ctx->loc_conf[ngx_modules[i]->ctx_index] = mconf;
+            ctx->loc_conf[cf->cycle->modules[i]->ctx_index] = mconf;
         }
     }
 
@@ -3086,17 +3086,17 @@ ngx_http_core_location(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
         return NGX_CONF_ERROR;
     }
 
-    for (i = 0; ngx_modules[i]; i++) {
-        if (ngx_modules[i]->type != NGX_HTTP_MODULE) {
+    for (i = 0; cf->cycle->modules[i]; i++) {
+        if (cf->cycle->modules[i]->type != NGX_HTTP_MODULE) {
             continue;
         }
 
-        module = ngx_modules[i]->ctx;
+        module = cf->cycle->modules[i]->ctx;
 
         if (module->create_loc_conf) {
-            ctx->loc_conf[ngx_modules[i]->ctx_index] =
+            ctx->loc_conf[cf->cycle->modules[i]->ctx_index] =
                                                    module->create_loc_conf(cf);
-            if (ctx->loc_conf[ngx_modules[i]->ctx_index] == NULL) {
+            if (ctx->loc_conf[cf->cycle->modules[i]->ctx_index] == NULL) {
                  return NGX_CONF_ERROR;
             }
         }
@@ -3503,7 +3503,7 @@ ngx_http_core_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
     /* TODO: it does not merge, it inits only */
 
     ngx_conf_merge_size_value(conf->connection_pool_size,
-                              prev->connection_pool_size, 256);
+                              prev->connection_pool_size, 64 * sizeof(void *));
     ngx_conf_merge_size_value(conf->request_pool_size,
                               prev->request_pool_size, 4096);
     ngx_conf_merge_msec_value(conf->client_header_timeout,
@@ -4607,12 +4607,12 @@ ngx_http_core_limit_except(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         return NGX_CONF_ERROR;
     }
 
-    for (i = 0; ngx_modules[i]; i++) {
-        if (ngx_modules[i]->type != NGX_HTTP_MODULE) {
+    for (i = 0; cf->cycle->modules[i]; i++) {
+        if (cf->cycle->modules[i]->type != NGX_HTTP_MODULE) {
             continue;
         }
 
-        module = ngx_modules[i]->ctx;
+        module = cf->cycle->modules[i]->ctx;
 
         if (module->create_loc_conf) {
 
@@ -4621,7 +4621,7 @@ ngx_http_core_limit_except(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
                  return NGX_CONF_ERROR;
             }
 
-            ctx->loc_conf[ngx_modules[i]->ctx_index] = mconf;
+            ctx->loc_conf[cf->cycle->modules[i]->ctx_index] = mconf;
         }
     }
 

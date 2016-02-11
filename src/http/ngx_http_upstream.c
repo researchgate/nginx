@@ -250,6 +250,11 @@ ngx_http_upstream_header_t  ngx_http_upstream_headers_in[] = {
                  ngx_http_upstream_copy_allow_ranges,
                  offsetof(ngx_http_headers_out_t, accept_ranges), 1 },
 
+    { ngx_string("Content-Range"),
+                 ngx_http_upstream_ignore_header_line, 0,
+                 ngx_http_upstream_copy_header_line,
+                 offsetof(ngx_http_headers_out_t, content_range), 0 },
+
     { ngx_string("Connection"),
                  ngx_http_upstream_process_connection, 0,
                  ngx_http_upstream_ignore_header_line, 0, 0 },
@@ -633,7 +638,19 @@ ngx_http_upstream_init_request(ngx_http_request_t *r)
         u->ssl_name = u->resolved->host;
 #endif
 
+        host = &u->resolved->host;
+
         if (u->resolved->sockaddr) {
+
+            if (u->resolved->port == 0
+                && u->resolved->sockaddr->sa_family != AF_UNIX)
+            {
+                ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,
+                              "no port in upstream \"%V\"", host);
+                ngx_http_upstream_finalize_request(r, u,
+                                               NGX_HTTP_INTERNAL_SERVER_ERROR);
+                return;
+            }
 
             if (ngx_http_upstream_create_round_robin_peer(r, u->resolved)
                 != NGX_OK)
@@ -647,8 +664,6 @@ ngx_http_upstream_init_request(ngx_http_request_t *r)
 
             return;
         }
-
-        host = &u->resolved->host;
 
         umcf = ngx_http_get_module_main_conf(r, ngx_http_upstream_module);
 
@@ -764,7 +779,7 @@ ngx_http_upstream_cache(ngx_http_request_t *r, ngx_http_upstream_t *u)
             return rc;
         }
 
-        if ((r->method & NGX_HTTP_HEAD) && u->conf->cache_convert_head) {
+        if (r->method == NGX_HTTP_HEAD && u->conf->cache_convert_head) {
             u->method = ngx_http_core_get_method;
         }
 
@@ -1426,6 +1441,7 @@ ngx_http_upstream_connect(ngx_http_request_t *r, ngx_http_upstream_t *u)
     }
 
     u->request_sent = 0;
+    u->request_body_sent = 0;
 
     if (rc == NGX_AGAIN) {
         ngx_add_timer(c->write, u->conf->connect_timeout);
@@ -1809,6 +1825,8 @@ ngx_http_upstream_send_request(ngx_http_request_t *r, ngx_http_upstream_t *u,
     }
 
     /* rc == NGX_OK */
+
+    u->request_body_sent = 1;
 
     if (c->write->timer_set) {
         ngx_del_timer(c->write);
@@ -2481,6 +2499,7 @@ ngx_http_upstream_process_headers(ngx_http_request_t *r, ngx_http_upstream_t *u)
 
             if (r->method != NGX_HTTP_HEAD) {
                 r->method = NGX_HTTP_GET;
+                r->method_name = ngx_http_core_get_method;
             }
 
             ngx_http_internal_redirect(r, &uri, &args);
@@ -5312,12 +5331,12 @@ ngx_http_upstream(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
         return NGX_CONF_ERROR;
     }
 
-    for (m = 0; ngx_modules[m]; m++) {
-        if (ngx_modules[m]->type != NGX_HTTP_MODULE) {
+    for (m = 0; cf->cycle->modules[m]; m++) {
+        if (cf->cycle->modules[m]->type != NGX_HTTP_MODULE) {
             continue;
         }
 
-        module = ngx_modules[m]->ctx;
+        module = cf->cycle->modules[m]->ctx;
 
         if (module->create_srv_conf) {
             mconf = module->create_srv_conf(cf);
@@ -5325,7 +5344,7 @@ ngx_http_upstream(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
                 return NGX_CONF_ERROR;
             }
 
-            ctx->srv_conf[ngx_modules[m]->ctx_index] = mconf;
+            ctx->srv_conf[cf->cycle->modules[m]->ctx_index] = mconf;
         }
 
         if (module->create_loc_conf) {
@@ -5334,7 +5353,7 @@ ngx_http_upstream(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
                 return NGX_CONF_ERROR;
             }
 
-            ctx->loc_conf[ngx_modules[m]->ctx_index] = mconf;
+            ctx->loc_conf[cf->cycle->modules[m]->ctx_index] = mconf;
         }
     }
 
