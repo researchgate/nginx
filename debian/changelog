@@ -1,4 +1,4 @@
-nginx (1.9.11-1+rg1ubuntu2) UNRELEASED; urgency=medium
+nginx (1.9.11-1+rg1ubuntu2) trusty; urgency=medium
 
   * Merge with upstream 1.9.11.
   * Update lua module to 0.10.0 and merged fix for 1.9.11 mentioned:
