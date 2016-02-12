@@ -1,3 +1,10 @@
+nginx (1.9.11-1+rg1ubuntu3) trusty; urgency=medium
+
+  * Re-merge, the last one was actually with master so ended up being against
+    unfinished 1.9.12.
+
+ -- Eric Webster <sophomeric@gmail.com>  Fri, 12 Feb 2016 11:47:28 +0000
+
 nginx (1.9.11-1+rg1ubuntu2) trusty; urgency=medium
 
   * Merge with upstream 1.9.11.
