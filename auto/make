@@ -223,6 +223,10 @@ ngx_main_link=${MAIN_LINK:+`echo $MAIN_LINK \
 
 cat << END                                                    >> $NGX_MAKEFILE
 
+build:	binary modules manpage
+
+binary:	$NGX_OBJS${ngx_dirsep}nginx${ngx_binext}
+
 $NGX_OBJS${ngx_dirsep}nginx${ngx_binext}:	$ngx_deps$ngx_spacer
 	\$(LINK) ${ngx_long_start}${ngx_binout}$NGX_OBJS${ngx_dirsep}nginx$ngx_long_cont$ngx_objs$ngx_libs$ngx_link$ngx_main_link
 	$ngx_rcc
@@ -433,9 +437,9 @@ fi
 
 # the addons config.make
 
-if test -n "$NGX_ADDONS"; then
+if test -n "$NGX_ADDONS$DYNAMIC_ADDONS"; then
 
-    for ngx_addon_dir in $NGX_ADDONS
+    for ngx_addon_dir in $NGX_ADDONS $DYNAMIC_ADDONS
     do
         if test -f $ngx_addon_dir/config.make; then
             . $ngx_addon_dir/config.make
