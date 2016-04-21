@@ -1,3 +1,9 @@
+nginx (1.9.15-1+rg1ubuntu1) trusty; urgency=medium
+
+  * Update to 1.9.15
+
+ -- Eric Webster <sophomeric@gmail.com>  Thu, 21 Apr 2016 08:39:05 +0000
+
 nginx (1.9.13-1+rg1ubuntu1) trusty; urgency=medium
 
   * Update to 1.9.13 and lua module to 0.10.2
