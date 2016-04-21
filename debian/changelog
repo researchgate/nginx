@@ -1,4 +1,4 @@
-nginx (1.9.15-1+rg1ubuntu1) trusty; urgency=medium
+nginx (1.9.15rg-1+rg1ubuntu1) trusty; urgency=medium
 
   * Update to 1.9.15
 
