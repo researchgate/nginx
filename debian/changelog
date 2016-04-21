@@ -1,3 +1,9 @@
+nginx (1.9.15.1-1+rg1ubuntu1) trusty; urgency=medium
+
+  * Fake version bump just to rebuild now that correct PPA dependencies have been added to launchpad (openssl 1.0.2).
+
+ -- Eric Webster <sophomeric@gmail.com>  Thu, 21 Apr 2016 12:43:26 +0000
+
 nginx (1.9.15rg-1+rg1ubuntu1) trusty; urgency=medium
 
   * Update to 1.9.15
