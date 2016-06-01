@@ -48,7 +48,6 @@ common_configure_flags := \
 			--with-http_realip_module \
             --with-http_v2_module \
 			--with-http_auth_request_module \
-            --add-module=$(MODULESDIR)/nginx-x-rid-header \
             --add-module=$(MODULESDIR)/nginx-auth-ldap
 
 light_configure_flags := \

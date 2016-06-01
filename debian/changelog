@@ -1,3 +1,9 @@
+nginx (1.11.1rg-1+rg1ubuntu2) trusty; urgency=medium
+
+  * Remove x-rid-header module, request_id is a built in now
+
+ -- Eric Webster <sophomeric@gmail.com>  Wed, 01 Jun 2016 15:20:43 +0000
+
 nginx (1.11.1rg-1+rg1ubuntu1) trusty; urgency=medium
 
   * Merged upstream 1.11.1 and updated lua module to 0.10.5
