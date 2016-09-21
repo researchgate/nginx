@@ -91,7 +91,7 @@ ngx_event_connect_peer(ngx_peer_connection_t *pc)
 #endif
 
 #if (NGX_HAVE_IP_BIND_ADDRESS_NO_PORT || NGX_LINUX)
-        port = ngx_inet_get_port(pc->sockaddr);
+        port = ngx_inet_get_port(pc->local->sockaddr);
 #endif
 
 #if (NGX_HAVE_IP_BIND_ADDRESS_NO_PORT)
@@ -166,6 +166,7 @@ ngx_event_connect_peer(ngx_peer_connection_t *pc)
     } else { /* type == SOCK_DGRAM */
         c->recv = ngx_udp_recv;
         c->send = ngx_send;
+        c->send_chain = ngx_udp_send_chain;
     }
 
     c->log_error = pc->log_error;

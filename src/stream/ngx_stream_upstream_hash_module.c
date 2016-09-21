@@ -84,7 +84,7 @@ static ngx_stream_module_t  ngx_stream_upstream_hash_module_ctx = {
     NULL,                                  /* init main configuration */
 
     ngx_stream_upstream_hash_create_conf,  /* create server configuration */
-    NULL,                                  /* merge server configuration */
+    NULL                                   /* merge server configuration */
 };
 
 
@@ -572,6 +572,7 @@ ngx_stream_upstream_get_chash_peer(ngx_peer_connection_t *pc, void *data)
         hp->tries++;
 
         if (hp->tries >= points->number) {
+            pc->name = hp->rrp.peers->name;
             ngx_stream_upstream_rr_peers_unlock(hp->rrp.peers);
             return NGX_BUSY;
         }
