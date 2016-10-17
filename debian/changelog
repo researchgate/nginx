@@ -1,3 +1,10 @@
+nginx (1.11.5rg-1+rg1ubuntu1) trusty; urgency=medium
+
+  * Update to 1.11.5
+  * Removed perl-use-dpkg-buildflags.patch (see: https://trac.nginx.org/nginx/changeset/0d2956dfc4e6fb0d4feeb0df213f521d1ade4312/nginx)
+
+ -- Eric Webster <sophomeric@gmail.com>  Mon, 17 Oct 2016 09:19:19 +0000
+
 nginx (1.11.2rg-1+rg1ubuntu1) trusty; urgency=medium
 
   * Update to 1.11.2
