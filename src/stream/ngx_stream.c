@@ -293,14 +293,12 @@ ngx_stream_init_phases(ngx_conf_t *cf, ngx_stream_core_main_conf_t *cmcf)
         return NGX_ERROR;
     }
 
-#if (NGX_STREAM_SSL)
     if (ngx_array_init(&cmcf->phases[NGX_STREAM_SSL_PHASE].handlers,
                        cf->pool, 1, sizeof(ngx_stream_handler_pt))
         != NGX_OK)
     {
         return NGX_ERROR;
     }
-#endif
 
     if (ngx_array_init(&cmcf->phases[NGX_STREAM_PREREAD_PHASE].handlers,
                        cf->pool, 1, sizeof(ngx_stream_handler_pt))
@@ -506,7 +504,7 @@ ngx_stream_optimize_servers(ngx_conf_t *cf, ngx_array_t *ports)
             ls->keepcnt = addr[i].opt.tcp_keepcnt;
 #endif
 
-#if (NGX_HAVE_INET6 && defined IPV6_V6ONLY)
+#if (NGX_HAVE_INET6)
             ls->ipv6only = addr[i].opt.ipv6only;
 #endif
 

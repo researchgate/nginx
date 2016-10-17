@@ -21,6 +21,7 @@
 #define NGX_STREAM_UPSTREAM_FAIL_TIMEOUT  0x0008
 #define NGX_STREAM_UPSTREAM_DOWN          0x0010
 #define NGX_STREAM_UPSTREAM_BACKUP        0x0020
+#define NGX_STREAM_UPSTREAM_MAX_CONNS     0x0100
 
 
 typedef struct {
@@ -50,11 +51,16 @@ typedef struct {
     ngx_addr_t                        *addrs;
     ngx_uint_t                         naddrs;
     ngx_uint_t                         weight;
+    ngx_uint_t                         max_conns;
     ngx_uint_t                         max_fails;
     time_t                             fail_timeout;
+    ngx_msec_t                         slow_start;
 
     unsigned                           down:1;
     unsigned                           backup:1;
+
+    NGX_COMPAT_BEGIN(4)
+    NGX_COMPAT_END
 } ngx_stream_upstream_server_t;
 
 
@@ -120,10 +126,9 @@ typedef struct {
     time_t                             start_sec;
     ngx_uint_t                         responses;
 
-#if (NGX_STREAM_SSL)
     ngx_str_t                          ssl_name;
-#endif
 
+    ngx_stream_upstream_srv_conf_t    *upstream;
     ngx_stream_upstream_resolved_t    *resolved;
     ngx_stream_upstream_state_t       *state;
     unsigned                           connected:1;

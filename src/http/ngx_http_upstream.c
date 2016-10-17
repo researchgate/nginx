@@ -748,6 +748,8 @@ found:
         return;
     }
 
+    u->upstream = uscf;
+
 #if (NGX_HTTP_SSL)
     u->ssl_name = uscf->host;
 #endif
@@ -5442,6 +5444,7 @@ ngx_http_upstream(ngx_conf_t *cf, ngx_command_t *cmd, void *dummy)
 
     uscf = ngx_http_upstream_add(cf, &u, NGX_HTTP_UPSTREAM_CREATE
                                          |NGX_HTTP_UPSTREAM_WEIGHT
+                                         |NGX_HTTP_UPSTREAM_MAX_CONNS
                                          |NGX_HTTP_UPSTREAM_MAX_FAILS
                                          |NGX_HTTP_UPSTREAM_FAIL_TIMEOUT
                                          |NGX_HTTP_UPSTREAM_DOWN
@@ -5543,7 +5546,7 @@ ngx_http_upstream_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     time_t                       fail_timeout;
     ngx_str_t                   *value, s;
     ngx_url_t                    u;
-    ngx_int_t                    weight, max_fails;
+    ngx_int_t                    weight, max_conns, max_fails;
     ngx_uint_t                   i;
     ngx_http_upstream_server_t  *us;
 
@@ -5557,6 +5560,7 @@ ngx_http_upstream_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     value = cf->args->elts;
 
     weight = 1;
+    max_conns = 0;
     max_fails = 1;
     fail_timeout = 10;
 
@@ -5571,6 +5575,21 @@ ngx_http_upstream_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
             weight = ngx_atoi(&value[i].data[7], value[i].len - 7);
 
             if (weight == NGX_ERROR || weight == 0) {
+                goto invalid;
+            }
+
+            continue;
+        }
+
+        if (ngx_strncmp(value[i].data, "max_conns=", 10) == 0) {
+
+            if (!(uscf->flags & NGX_HTTP_UPSTREAM_MAX_CONNS)) {
+                goto not_supported;
+            }
+
+            max_conns = ngx_atoi(&value[i].data[10], value[i].len - 10);
+
+            if (max_conns == NGX_ERROR) {
                 goto invalid;
             }
 
@@ -5653,6 +5672,7 @@ ngx_http_upstream_server(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     us->addrs = u.addrs;
     us->naddrs = u.naddrs;
     us->weight = weight;
+    us->max_conns = max_conns;
     us->max_fails = max_fails;
     us->fail_timeout = fail_timeout;
 
@@ -6001,12 +6021,7 @@ ngx_http_upstream_hide_headers_hash(ngx_conf_t *cf,
 
         conf->hide_headers_hash = prev->hide_headers_hash;
 
-        if (conf->hide_headers_hash.buckets
-#if (NGX_HTTP_CACHE)
-            && ((conf->cache == 0) == (prev->cache == 0))
-#endif
-           )
-        {
+        if (conf->hide_headers_hash.buckets) {
             return NGX_OK;
         }
 
@@ -6091,7 +6106,23 @@ ngx_http_upstream_hide_headers_hash(ngx_conf_t *cf,
     hash->pool = cf->pool;
     hash->temp_pool = NULL;
 
-    return ngx_hash_init(hash, hide_headers.elts, hide_headers.nelts);
+    if (ngx_hash_init(hash, hide_headers.elts, hide_headers.nelts) != NGX_OK) {
+        return NGX_ERROR;
+    }
+
+    /*
+     * special handling to preserve conf->hide_headers_hash
+     * in the "http" section to inherit it to all servers
+     */
+
+    if (prev->hide_headers_hash.buckets == NULL
+        && conf->hide_headers == prev->hide_headers
+        && conf->pass_headers == prev->pass_headers)
+    {
+        prev->hide_headers_hash = conf->hide_headers_hash;
+    }
+
+    return NGX_OK;
 }
 
 

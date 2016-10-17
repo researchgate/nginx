@@ -49,15 +49,11 @@ typedef struct {
 
     unsigned                       bind:1;
     unsigned                       wildcard:1;
-#if (NGX_STREAM_SSL)
     unsigned                       ssl:1;
-#endif
-#if (NGX_HAVE_INET6 && defined IPV6_V6ONLY)
+#if (NGX_HAVE_INET6)
     unsigned                       ipv6only:1;
 #endif
-#if (NGX_HAVE_REUSEPORT)
     unsigned                       reuseport:1;
-#endif
     unsigned                       so_keepalive:2;
     unsigned                       proxy_protocol:1;
 #if (NGX_HAVE_KEEPALIVE_TUNABLE)
@@ -73,9 +69,7 @@ typedef struct {
 typedef struct {
     ngx_stream_conf_ctx_t         *ctx;
     ngx_str_t                      addr_text;
-#if (NGX_STREAM_SSL)
     unsigned                       ssl:1;
-#endif
     unsigned                       proxy_protocol:1;
 } ngx_stream_addr_conf_t;
 
@@ -119,9 +113,7 @@ typedef enum {
     NGX_STREAM_POST_ACCEPT_PHASE = 0,
     NGX_STREAM_PREACCESS_PHASE,
     NGX_STREAM_ACCESS_PHASE,
-#if (NGX_STREAM_SSL)
     NGX_STREAM_SSL_PHASE,
-#endif
     NGX_STREAM_PREREAD_PHASE,
     NGX_STREAM_CONTENT_PHASE,
     NGX_STREAM_LOG_PHASE
@@ -225,9 +217,11 @@ struct ngx_stream_session_s {
     ngx_int_t                      phase_handler;
     ngx_uint_t                     status;
 
-#if (NGX_STREAM_SSL)
-    ngx_uint_t                     ssl;  /* unsigned  ssl:1; */
-#endif
+    unsigned                       ssl:1;
+
+    unsigned                       stat_processing:1;
+
+    unsigned                       health_check:1;
 };
 
 
