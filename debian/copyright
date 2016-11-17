@@ -65,11 +65,6 @@ Copyright: Copyright (C) 2009-2014, by Xiaozhe Wang (chaoslawful) <chaoslawful@g
            Copyright (C) 2009-2014, by Yichun "agentzh" Zhang (章亦春) <agentzh@gmail.com>, CloudFlare Inc.
 License: BSD-2-clause
 
-Files: debian/modules/nginx-upstream-fair/*
-Copyright: Copyright (c) 2007 Grzegorz Nosek
-           Igor Sysoev
-License: BSD-2-clause
-
 Files: debian/modules/nginx-http-push/*
 Copyright: Copyright (c) 2009 Leo Ponomarev
 License: Expat
