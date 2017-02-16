@@ -1,3 +1,9 @@
+nginx (1.11.8rg-1+rg1ubuntu1) trusty; urgency=medium
+
+  * Update to 1.11.8
+
+ -- Eric Webster <sophomeric@gmail.com>  Tue, 03 Jan 2017 09:27:09 +0000
+
 nginx (1.11.7rg-1+rg1ubuntu1) trusty; urgency=medium
 
   * Update nginx-lua to 0.10.7
