@@ -1,3 +1,9 @@
+nginx (1.11.10rg-1+rg1ubuntu1) trusty; urgency=medium
+
+  * Update to 1.11.10
+
+ -- Eric Webster <sophomeric@gmail.com>  Thu, 16 Feb 2017 09:13:47 +0000
+
 nginx (1.11.8rg-1+rg1ubuntu1) trusty; urgency=medium
 
   * Update to 1.11.8
