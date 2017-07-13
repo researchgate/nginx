@@ -1,3 +1,19 @@
+nginx (1.13.3rg-1+rg1ubuntu1) trusty; urgency=medium
+
+  * Updated nginx to 1.13.3
+  * Update nginx-lua: v0.10.7 -> v0.10.9rc8
+    + https://github.com/openresty/lua-nginx-module/issues/1016
+  * Update headers-more-nginx-module: v0.25 -> v0.32
+  * Update nginx-development-kit: v0.2.19 -> v0.3.0
+  * Update nginx-auth-pam: 1.4 -> 1.5.1
+  * Update nginx-echo: v0.57 -> v0.60
+    + https://github.com/openresty/echo-nginx-module/issues/64  
+    + Manually applied: https://github.com/openresty/echo-nginx-module/pull/65/files
+  * Update nginx-upload-progress: v0.9.1 -> v0.9.2
+  * Update ngx-fancyindex: v0.3.5 -> v0.4.1
+
+ -- Eric Webster <sophomeric@gmail.com>  Thu, 13 Jul 2017 10:28:14 +0000
+
 nginx (1.11.10rg-1+rg1ubuntu1) trusty; urgency=medium
 
   * Update to 1.11.10

@@ -6,23 +6,23 @@ README for Modules versions
 
  headers-more-nginx-module
   Homepage: https://github.com/agentzh/headers-more-nginx-module
-  Version: v0.25
+  Version: v0.32
 
  nginx-development-kit
   Homepage: https://github.com/simpl/ngx_devel_kit/
-  Version: v0.2.19
+  Version: v0.3.0
 
  nginx-auth-pam
   Homepage: https://github.com/stogh/ngx_http_auth_pam_module
-  Version: 1.4
+  Version: 1.5.1
 
  nginx-echo
-  Homepage: https://github.com/agentzh/echo-nginx-module
-  Version: v0.57
+  Homepage: https://github.com/openresty/echo-nginx-module
+  Version: v0.60 (+patches)
 
  nginx-lua
   Homepage: https://github.com/openresty/lua-nginx-module
-  Version: v0.10.7
+  Version: v0.10.9rc8
 
  nginx-upstream-fair
   Homepage: https://github.com/gnosek/nginx-upstream-fair
@@ -35,7 +35,7 @@ README for Modules versions
  nginx-upload-progress
   Homepage: https://github.com/masterzen/nginx-upload-progress-module
     rm -r debian/nginx-upload-progress/test
-  Version: v0.9.1
+  Version: v0.9.2
 
  nginx-cache-purge
   Homepage: https://github.com/FRiCKLE/ngx_cache_purge/
@@ -47,7 +47,7 @@ README for Modules versions
 
  ngx-fancyindex
   Homepage: https://github.com/aperezdc/ngx-fancyindex
-  Version: v0.3.5
+  Version: v0.4.1
 
  ngx_http_substitutions_filter_module
   Homepage: https://github.com/yaoweibin/ngx_http_substitutions_filter_module
