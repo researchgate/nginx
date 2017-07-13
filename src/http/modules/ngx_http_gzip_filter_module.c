@@ -644,7 +644,7 @@ ngx_http_gzip_filter_gzheader(ngx_http_request_t *r, ngx_http_gzip_ctx_t *ctx)
     static u_char  gzheader[10] =
                                { 0x1f, 0x8b, Z_DEFLATED, 0, 0, 0, 0, 0, 0, 3 };
 
-    b = ngx_pcalloc(r->pool, sizeof(ngx_buf_t));
+    b = ngx_calloc_buf(r->pool);
     if (b == NULL) {
         return NGX_ERROR;
     }
@@ -1084,16 +1084,16 @@ ngx_http_gzip_ratio_variable(ngx_http_request_t *r,
     ngx_uint_t            zint, zfrac;
     ngx_http_gzip_ctx_t  *ctx;
 
-    v->valid = 1;
-    v->no_cacheable = 0;
-    v->not_found = 0;
-
     ctx = ngx_http_get_module_ctx(r, ngx_http_gzip_filter_module);
 
     if (ctx == NULL || ctx->zout == 0) {
         v->not_found = 1;
         return NGX_OK;
     }
+
+    v->valid = 1;
+    v->no_cacheable = 0;
+    v->not_found = 0;
 
     v->data = ngx_pnalloc(r->pool, NGX_INT32_LEN + 3);
     if (v->data == NULL) {

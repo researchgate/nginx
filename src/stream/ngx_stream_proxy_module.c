@@ -106,6 +106,7 @@ static ngx_conf_bitmask_t  ngx_stream_proxy_ssl_protocols[] = {
     { ngx_string("TLSv1"), NGX_SSL_TLSv1 },
     { ngx_string("TLSv1.1"), NGX_SSL_TLSv1_1 },
     { ngx_string("TLSv1.2"), NGX_SSL_TLSv1_2 },
+    { ngx_string("TLSv1.3"), NGX_SSL_TLSv1_3 },
     { ngx_null_string, 0 }
 };
 
@@ -733,7 +734,6 @@ ngx_stream_proxy_connect(ngx_stream_session_t *s)
 static void
 ngx_stream_proxy_init_upstream(ngx_stream_session_t *s)
 {
-    int                           tcp_nodelay;
     u_char                       *p;
     ngx_chain_t                  *cl;
     ngx_connection_t             *c, *pc;
@@ -749,22 +749,10 @@ ngx_stream_proxy_init_upstream(ngx_stream_session_t *s)
 
     if (pc->type == SOCK_STREAM
         && cscf->tcp_nodelay
-        && pc->tcp_nodelay == NGX_TCP_NODELAY_UNSET)
+        && ngx_tcp_nodelay(pc) != NGX_OK)
     {
-        ngx_log_debug0(NGX_LOG_DEBUG_STREAM, pc->log, 0, "tcp_nodelay");
-
-        tcp_nodelay = 1;
-
-        if (setsockopt(pc->fd, IPPROTO_TCP, TCP_NODELAY,
-                       (const void *) &tcp_nodelay, sizeof(int)) == -1)
-        {
-            ngx_connection_error(pc, ngx_socket_errno,
-                                 "setsockopt(TCP_NODELAY) failed");
-            ngx_stream_proxy_next_upstream(s);
-            return;
-        }
-
-        pc->tcp_nodelay = NGX_TCP_NODELAY_SET;
+        ngx_stream_proxy_next_upstream(s);
+        return;
     }
 
     pscf = ngx_stream_get_module_srv_conf(s, ngx_stream_proxy_module);

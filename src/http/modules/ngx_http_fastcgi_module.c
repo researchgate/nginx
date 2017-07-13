@@ -211,6 +211,7 @@ static ngx_conf_bitmask_t  ngx_http_fastcgi_next_upstream_masks[] = {
     { ngx_string("http_503"), NGX_HTTP_UPSTREAM_FT_HTTP_503 },
     { ngx_string("http_403"), NGX_HTTP_UPSTREAM_FT_HTTP_403 },
     { ngx_string("http_404"), NGX_HTTP_UPSTREAM_FT_HTTP_404 },
+    { ngx_string("http_429"), NGX_HTTP_UPSTREAM_FT_HTTP_429 },
     { ngx_string("updating"), NGX_HTTP_UPSTREAM_FT_UPDATING },
     { ngx_string("off"), NGX_HTTP_UPSTREAM_FT_OFF },
     { ngx_null_string, 0 }
@@ -1877,6 +1878,7 @@ ngx_http_fastcgi_process_header(ngx_http_request_t *r)
 
                     p = ngx_pnalloc(r->pool, size);
                     if (p == NULL) {
+                        h->hash = 0;
                         return NGX_ERROR;
                     }
 
@@ -1899,6 +1901,7 @@ ngx_http_fastcgi_process_header(ngx_http_request_t *r)
                         ngx_log_error(NGX_LOG_ALERT, r->connection->log, 0,
                                       "invalid header after joining "
                                       "FastCGI records");
+                        h->hash = 0;
                         return NGX_ERROR;
                     }
 
@@ -1924,6 +1927,7 @@ ngx_http_fastcgi_process_header(ngx_http_request_t *r)
                                               h->key.len + 1 + h->value.len + 1
                                               + h->key.len);
                     if (h->key.data == NULL) {
+                        h->hash = 0;
                         return NGX_ERROR;
                     }
 
