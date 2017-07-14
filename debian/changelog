@@ -1,3 +1,15 @@
+nginx (1.13.3rg2-1+rg1ubuntu1) trusty; urgency=medium
+
+  * Fix build dependency for libssl-dev
+
+ -- Eric Webster <sophomeric@gmail.com>  Fri, 14 Jul 2017 08:18:27 +0000
+
+nginx (1.13.3rg-1+rg1ubuntu2) trusty; urgency=medium
+
+  * Update build dependencies
+
+ -- Eric Webster <sophomeric@gmail.com>  Thu, 13 Jul 2017 14:02:21 +0000
+
 nginx (1.13.3rg-1+rg1ubuntu1) trusty; urgency=medium
 
   * Updated nginx to 1.13.3
