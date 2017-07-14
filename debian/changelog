@@ -1,3 +1,16 @@
+nginx (1.13.3.xenial.rg4) xenial; urgency=medium
+
+  * Fix build dependency on libssl1.0.2 (hopefully)
+  * Change version to include distro so we can build for others.
+
+ -- Eric Webster <sophomeric@gmail.com>  Fri, 14 Jul 2017 12:37:10 +0000
+
+nginx (1.13.3rg3-1+rg1ubuntu1) trusty; urgency=medium
+
+  * Add libssl1.0.2 as dependency because lua module doesn't support 1.1.0 yet.
+
+ -- Eric Webster <sophomeric@gmail.com>  Fri, 14 Jul 2017 12:12:39 +0000
+
 nginx (1.13.3rg2-1+rg1ubuntu1) trusty; urgency=medium
 
   * Fix build dependency for libssl-dev

@@ -1,0 +1,6 @@
+**/*.log
+**/.gitattributes
+**/.gitignore
+!.gitignore
+**/.travis.yml
+**/.git
