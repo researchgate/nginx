@@ -1,4 +1,4 @@
-nginx (1.13.3.xenial.rg4) xenial; urgency=medium
+nginx (1.13.3.trusty.rg4.2-1) trusty; urgency=medium
 
   * Fix build dependency on libssl1.0.2 (hopefully)
   * Change version to include distro so we can build for others.
