@@ -1,3 +1,12 @@
+nginx (1.13.4.xenial.rg1-1ubuntu1) xenial; urgency=medium
+
+  * Update to nginx 1.13.4
+  * Update nginx-echo module to v0.61
+  * Update nginx-lua module to v0.10.10
+  * Update nginx-dav-ext-module to v0.1.0
+
+ -- Eric Webster <sophomeric@gmail.com>  Wed, 09 Aug 2017 08:27:03 +0000
+
 nginx (1.13.3.trusty.rg4.2-1) trusty; urgency=medium
 
   * Fix build dependency on libssl1.0.2 (hopefully)

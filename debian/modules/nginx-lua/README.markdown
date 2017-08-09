@@ -62,7 +62,7 @@ Production ready.
 Version
 =======
 
-This document describes ngx_lua [v0.10.8](https://github.com/openresty/lua-nginx-module/tags) released on 8 April 2017.
+This document describes ngx_lua [v0.10.10](https://github.com/openresty/lua-nginx-module/tags) released on 8 August 2017.
 
 Synopsis
 ========
@@ -990,7 +990,7 @@ Copyright and License
 
 This module is licensed under the BSD license.
 
-Copyright (C) 2009-2016, by Xiaozhe Wang (chaoslawful) <chaoslawful@gmail.com>.
+Copyright (C) 2009-2017, by Xiaozhe Wang (chaoslawful) <chaoslawful@gmail.com>.
 
 Copyright (C) 2009-2017, by Yichun "agentzh" Zhang (章亦春) <agentzh@gmail.com>, OpenResty Inc.
 
@@ -5909,7 +5909,7 @@ The optional fourth argument, `ctx`, can be a Lua table holding an optional `pos
 
  local ctx = { pos = 2 }
  local m, err = ngx.re.match("1234, hello", "[0-9]+", "", ctx)
-      -- m[0] = "34"
+      -- m[0] = "234"
       -- ctx.pos == 5
 ```
 
