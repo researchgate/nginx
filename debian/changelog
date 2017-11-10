@@ -1,3 +1,9 @@
+nginx (1.13.6.xenial.rg5-1ubuntu1) xenial; urgency=medium
+
+  * Rebuild again, ldap module was missing
+
+ -- Eric Webster <sophomeric@gmail.com>  Fri, 10 Nov 2017 16:20:42 +0000
+
 nginx (1.13.6.xenial.rg4-1ubuntu1) xenial; urgency=medium
 
   * Something was wrong with the package, rebuilding, no changes
