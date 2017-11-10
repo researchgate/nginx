@@ -11,8 +11,7 @@ case "$1" in
     ;;
 esac
 
-if [ -x /etc/init.d/nginx ]; then
-  if [ -f /run/nginx.pid ] && pidof /usr/sbin/nginx >/dev/null; then
+if [ -f /run/nginx.pid ] && pidof /usr/sbin/nginx >/dev/null; then
     NGX_PID=`cat /run/nginx.pid`
     if kill -s USR2 $NGX_PID 2>/dev/null; then
       while [ ! -s /run/nginx.pid.oldbin ] || [ ! -s /run/nginx.pid ]; do
@@ -29,7 +28,6 @@ if [ -x /etc/init.d/nginx ]; then
     fi
   else
     invoke-rc.d nginx start || exit $?
-  fi
 fi
 
 #DEBHELPER#

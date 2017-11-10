@@ -6,7 +6,7 @@ README for Modules versions
 
  headers-more-nginx-module
   Homepage: https://github.com/agentzh/headers-more-nginx-module
-  Version: v0.32
+  Version: v0.33
 
  nginx-development-kit
   Homepage: https://github.com/simpl/ngx_devel_kit/
@@ -22,7 +22,7 @@ README for Modules versions
 
  nginx-lua
   Homepage: https://github.com/openresty/lua-nginx-module
-  Version: v0.10.10
+  Version: v0.10.11
 
  nginx-upstream-fair
   Homepage: https://github.com/gnosek/nginx-upstream-fair
