@@ -87,6 +87,7 @@ syn keyword ngxDirectiveBlock contained if
 syn keyword ngxDirectiveBlock contained geo
 syn keyword ngxDirectiveBlock contained map
 syn keyword ngxDirectiveBlock contained split_clients
+syn keyword ngxDirectiveBlock contained match
 
 syn keyword ngxDirectiveImportant contained include
 syn keyword ngxDirectiveImportant contained root
@@ -117,6 +118,7 @@ syn keyword ngxDirectiveDeprecated contained spdy_pool_size
 syn keyword ngxDirectiveDeprecated contained spdy_recv_buffer_size
 syn keyword ngxDirectiveDeprecated contained spdy_recv_timeout
 syn keyword ngxDirectiveDeprecated contained spdy_streams_index_size
+syn keyword ngxDirectiveDeprecated contained upstream_conf
 
 syn keyword ngxDirective contained absolute_redirect
 syn keyword ngxDirective contained accept_mutex
@@ -324,7 +326,6 @@ syn keyword ngxDirective contained log_not_found
 syn keyword ngxDirective contained log_subrequest
 syn keyword ngxDirective contained map_hash_bucket_size
 syn keyword ngxDirective contained map_hash_max_size
-syn keyword ngxDirective contained match
 syn keyword ngxDirective contained master_process
 syn keyword ngxDirective contained max_ranges
 syn keyword ngxDirective contained memcached_bind
@@ -582,7 +583,6 @@ syn keyword ngxDirective contained types_hash_bucket_size
 syn keyword ngxDirective contained types_hash_max_size
 syn keyword ngxDirective contained underscores_in_headers
 syn keyword ngxDirective contained uninitialized_variable_warn
-syn keyword ngxDirective contained upstream_conf
 syn keyword ngxDirective contained use
 syn keyword ngxDirective contained user
 syn keyword ngxDirective contained userid
@@ -954,6 +954,7 @@ syn keyword ngxDirectiveThirdParty contained nchan_redis_publish_msgpacked_max_s
 syn keyword ngxDirectiveThirdParty contained nchan_redis_server
 syn keyword ngxDirectiveThirdParty contained nchan_redis_storage_mode
 syn keyword ngxDirectiveThirdParty contained nchan_redis_url
+syn keyword ngxDirectiveThirdParty contained nchan_redis_wait_after_connecting
 syn keyword ngxDirectiveThirdParty contained nchan_shared_memory_size
 syn keyword ngxDirectiveThirdParty contained nchan_storage_engine
 syn keyword ngxDirectiveThirdParty contained nchan_store_messages
@@ -1080,6 +1081,8 @@ syn keyword ngxDirectiveThirdParty contained tnt_select
 syn keyword ngxDirectiveThirdParty contained tnt_select_limit_max
 syn keyword ngxDirectiveThirdParty contained tnt_send_timeout
 syn keyword ngxDirectiveThirdParty contained tnt_set_header
+syn keyword ngxDirectiveThirdParty contained tnt_update
+syn keyword ngxDirectiveThirdParty contained tnt_upsert
 
 " A module for nginx web server for handling file uploads using multipart/form-data encoding (RFC 1867)
 " https://github.com/Austinb/nginx-upload-module
@@ -2106,8 +2109,10 @@ syn keyword ngxDirectiveThirdParty contained echo_sleep
 
 " Embed the power of Lua into NGINX TCP/UDP servers
 " https://github.com/openresty/stream-lua-nginx-module
+syn keyword ngxDirectiveThirdParty contained lua_add_variable
 syn keyword ngxDirectiveThirdParty contained preread_by_lua_block
 syn keyword ngxDirectiveThirdParty contained preread_by_lua_file
+syn keyword ngxDirectiveThirdParty contained preread_by_lua_no_postpone
 
 " nginx-upsync-module
 " https://github.com/weibocom/nginx-upsync-module
