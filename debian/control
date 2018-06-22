@@ -22,8 +22,7 @@ Build-Depends: autotools-dev,
                libpam0g-dev,
                libpcre3-dev,
                libperl-dev,
-               libssl-dev (>= 1.0.2),
-               libssl-dev (<< 1.1.0),
+               libssl-dev (>= 1.1.0),
                libxslt1-dev,
                po-debconf,
                zlib1g-dev
@@ -40,7 +39,7 @@ Depends: nginx-full   (>= ${source:Version}) |
          nginx-full   (<< ${source:Version}.1~) |
          nginx-light  (<< ${source:Version}.1~) |
          nginx-extras (<< ${source:Version}.1~) ,
-         libssl1.0.2,
+         libssl1.1,
          ${misc:Depends}
 Description: small, powerful, scalable web/proxy server
  Nginx ("engine X") is a high-performance web and reverse proxy server
