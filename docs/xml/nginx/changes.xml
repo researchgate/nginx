@@ -5,6 +5,273 @@
 <change_log title="nginx">
 
 
+<changes ver="1.15.0" date="2018-06-05">
+
+<change type="change">
+<para lang="ru">
+директива "ssl" теперь считается устаревшей;
+вместо неё следует использовать параметр ssl директивы listen.
+</para>
+<para lang="en">
+the "ssl" directive is deprecated;
+the "ssl" parameter of the "listen" directive should be used instead.
+</para>
+</change>
+
+<change type="change">
+<para lang="ru">
+теперь при использовании директивы listen с параметром ssl
+nginx определяет отсутствие SSL-сертификатов при тестировании конфигурации.
+</para>
+<para lang="en">
+now nginx detects missing SSL certificates during configuration testing
+when using the "ssl" parameter of the "listen" directive.
+</para>
+</change>
+
+<change type="feature">
+<para lang="ru">
+теперь модуль stream умеет обрабатывать
+несколько входящих UDP-пакетов от клиента в рамках одной сессии.
+</para>
+<para lang="en">
+now the stream module can handle
+multiple incoming UDP datagrams from a client within a single session.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+в директиве proxy_cache_valid
+можно было указать некорректный код ответа.
+</para>
+<para lang="en">
+it was possible to specify an incorrect response code
+in the "proxy_cache_valid" directive.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+nginx не собирался gcc 8.1.
+</para>
+<para lang="en">
+nginx could not be built by gcc 8.1.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+логгирование в syslog останавливалось при изменении локального IP-адреса.
+</para>
+<para lang="en">
+logging to syslog stopped on local IP address changes.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+nginx не собирался компилятором clang, если был установлен CUDA SDK;
+ошибка появилась в 1.13.8.
+</para>
+<para lang="en">
+nginx could not be built by clang with CUDA SDK installed;
+the bug had appeared in 1.13.8.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+при использовании unix domain listen-сокетов на FreeBSD
+в процессе обновления исполняемого файла
+в логе могли появляться сообщения "getsockopt(TCP_FASTOPEN) ... failed".
+</para>
+<para lang="en">
+"getsockopt(TCP_FASTOPEN) ... failed" messages might appear in logs
+during binary upgrade
+when using unix domain listen sockets on FreeBSD.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+nginx не собирался на Fedora 28 Linux.
+</para>
+<para lang="en">
+nginx could not be built on Fedora 28 Linux.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+при использовании директивы limit_req
+заданная скорость обработки запросов могла не соблюдаться.
+</para>
+<para lang="en">
+request processing rate might exceed configured rate
+when using the "limit_req" directive.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+в обработке адресов клиентов при использовании unix domain listen-сокетов
+для работы с датаграммами на Linux.
+</para>
+<para lang="en">
+in handling of client addresses when using unix domain listen sockets
+to work with datagrams on Linux.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+в обработке ошибок выделения памяти.
+</para>
+<para lang="en">
+in memory allocation error handling.
+</para>
+</change>
+
+</changes>
+
+
+<changes ver="1.13.12" date="2018-04-10">
+
+<change type="bugfix">
+<para lang="ru">
+при возврате большого ответа
+соединения с gRPC-бэкендами могли неожиданно закрываться.
+</para>
+<para lang="en">
+connections with gRPC backends might be closed unexpectedly
+when returning a large response.
+</para>
+</change>
+
+</changes>
+
+
+<changes ver="1.13.11" date="2018-04-03">
+
+<change type="feature">
+<para lang="ru">
+параметр proxy_protocol директивы listen
+теперь поддерживает протокол PROXY версии 2.
+</para>
+<para lang="en">
+the "proxy_protocol" parameter of the "listen" directive
+now supports the PROXY protocol version 2.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+nginx не собирался с OpenSSL 1.1.1 статически на Linux.
+</para>
+<para lang="en">
+nginx could not be built with OpenSSL 1.1.1 statically on Linux.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+в параметрах http_404, http_500 и им подобных
+директивы proxy_next_upstream.
+</para>
+<para lang="en">
+in the "http_404", "http_500", etc. parameters
+of the "proxy_next_upstream" directive.
+</para>
+</change>
+
+</changes>
+
+
+<changes ver="1.13.10" date="2018-03-20">
+
+<change type="feature">
+<para lang="ru">
+теперь параметр set в SSI-директиве include
+позволяет сохранять в переменную любые ответы;
+максимальный размер ответа задаётся директивой subrequest_output_buffer_size.
+</para>
+<para lang="en">
+the "set" parameter of the "include" SSI directive now allows
+writing arbitrary responses to a variable;
+the "subrequest_output_buffer_size" directive defines maximum response size.
+</para>
+</change>
+
+<change type="feature">
+<para lang="ru">
+теперь nginx использует вызов clock_gettime(CLOCK_MONOTONIC), если он доступен,
+что позволяет избежать некорректного срабатывания таймаутов
+при изменениях системного времени.
+</para>
+<para lang="en">
+now nginx uses clock_gettime(CLOCK_MONOTONIC) if available,
+to avoid timeouts being incorrectly triggered
+on system time changes.
+</para>
+</change>
+
+<change type="feature">
+<para lang="ru">
+параметр "escape=none" директивы log_format.<br/>
+Спасибо Johannes Baiter и Calin Don.
+</para>
+<para lang="en">
+the "escape=none" parameter of the "log_format" directive.<br/>
+Thanks to Johannes Baiter and Calin Don.
+</para>
+</change>
+
+<change type="feature">
+<para lang="ru">
+переменная $ssl_preread_alpn_protocols
+в модуле ngx_stream_ssl_preread_module.
+</para>
+<para lang="en">
+the $ssl_preread_alpn_protocols variable
+in the ngx_stream_ssl_preread_module.
+</para>
+</change>
+
+<change type="feature">
+<para lang="ru">
+модуль ngx_http_grpc_module.
+</para>
+<para lang="en">
+the ngx_http_grpc_module.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+в обработке ошибок выделения памяти в директиве geo.
+</para>
+<para lang="en">
+in memory allocation error handling in the "geo" directive.
+</para>
+</change>
+
+<change type="bugfix">
+<para lang="ru">
+при использовании переменных в директиве auth_basic_user_file
+в лог мог выводиться символ '\0'.<br/>
+Спасибо Вадиму Филимонову.
+</para>
+<para lang="en">
+when using variables in the "auth_basic_user_file" directive
+a null character might appear in logs.<br/>
+Thanks to Vadim Filimonov.
+</para>
+</change>
+
+</changes>
+
+
 <changes ver="1.13.9" date="2018-02-20">
 
 <change type="feature">

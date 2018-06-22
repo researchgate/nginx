@@ -132,6 +132,10 @@ ngx_http_header_t  ngx_http_headers_in[] = {
                  offsetof(ngx_http_headers_in_t, transfer_encoding),
                  ngx_http_process_header_line },
 
+    { ngx_string("TE"),
+                 offsetof(ngx_http_headers_in_t, te),
+                 ngx_http_process_header_line },
+
     { ngx_string("Expect"),
                  offsetof(ngx_http_headers_in_t, expect),
                  ngx_http_process_unique_header_line },
@@ -332,19 +336,8 @@ ngx_http_init_connection(ngx_connection_t *c)
     sscf = ngx_http_get_module_srv_conf(hc->conf_ctx, ngx_http_ssl_module);
 
     if (sscf->enable || hc->addr_conf->ssl) {
-
-        c->log->action = "SSL handshaking";
-
-        if (hc->addr_conf->ssl && sscf->ssl.ctx == NULL) {
-            ngx_log_error(NGX_LOG_ERR, c->log, 0,
-                          "no \"ssl_certificate\" is defined "
-                          "in server listening on SSL port");
-            ngx_http_close_connection(c);
-            return;
-        }
-
         hc->ssl = 1;
-
+        c->log->action = "SSL handshaking";
         rev->handler = ngx_http_ssl_handshake;
     }
     }
@@ -994,7 +987,12 @@ ngx_http_process_request_line(ngx_event_t *rev)
                 return;
             }
 
-            if (r->host_start && r->host_end) {
+            if (r->schema_end) {
+                r->schema.len = r->schema_end - r->schema_start;
+                r->schema.data = r->schema_start;
+            }
+
+            if (r->host_end) {
 
                 host.len = r->host_end - r->host_start;
                 host.data = r->host_start;

@@ -23,38 +23,6 @@
 #define ngx_http_v2_literal_size(h)                                           \
     (ngx_http_v2_integer_octets(sizeof(h) - 1) + sizeof(h) - 1)
 
-#define ngx_http_v2_indexed(i)      (128 + (i))
-#define ngx_http_v2_inc_indexed(i)  (64 + (i))
-
-#define NGX_HTTP_V2_ENCODE_RAW            0
-#define NGX_HTTP_V2_ENCODE_HUFF           0x80
-
-#define NGX_HTTP_V2_AUTHORITY_INDEX       1
-#define NGX_HTTP_V2_METHOD_GET_INDEX      2
-#define NGX_HTTP_V2_PATH_INDEX            4
-
-#define NGX_HTTP_V2_SCHEME_HTTP_INDEX     6
-#define NGX_HTTP_V2_SCHEME_HTTPS_INDEX    7
-
-#define NGX_HTTP_V2_STATUS_INDEX          8
-#define NGX_HTTP_V2_STATUS_200_INDEX      8
-#define NGX_HTTP_V2_STATUS_204_INDEX      9
-#define NGX_HTTP_V2_STATUS_206_INDEX      10
-#define NGX_HTTP_V2_STATUS_304_INDEX      11
-#define NGX_HTTP_V2_STATUS_400_INDEX      12
-#define NGX_HTTP_V2_STATUS_404_INDEX      13
-#define NGX_HTTP_V2_STATUS_500_INDEX      14
-
-#define NGX_HTTP_V2_ACCEPT_ENCODING_INDEX 16
-#define NGX_HTTP_V2_ACCEPT_LANGUAGE_INDEX 17
-#define NGX_HTTP_V2_CONTENT_LENGTH_INDEX  28
-#define NGX_HTTP_V2_CONTENT_TYPE_INDEX    31
-#define NGX_HTTP_V2_DATE_INDEX            33
-#define NGX_HTTP_V2_LAST_MODIFIED_INDEX   44
-#define NGX_HTTP_V2_LOCATION_INDEX        46
-#define NGX_HTTP_V2_SERVER_INDEX          54
-#define NGX_HTTP_V2_USER_AGENT_INDEX      58
-#define NGX_HTTP_V2_VARY_INDEX            59
 
 #define NGX_HTTP_V2_NO_TRAILERS           (ngx_http_v2_out_frame_t *) -1
 
@@ -88,10 +56,6 @@ static ngx_int_t ngx_http_v2_push_resources(ngx_http_request_t *r);
 static ngx_int_t ngx_http_v2_push_resource(ngx_http_request_t *r,
     ngx_str_t *path, ngx_str_t *binary);
 
-static u_char *ngx_http_v2_string_encode(u_char *dst, u_char *src, size_t len,
-    u_char *tmp, ngx_uint_t lower);
-static u_char *ngx_http_v2_write_int(u_char *pos, ngx_uint_t prefix,
-    ngx_uint_t value);
 static ngx_http_v2_out_frame_t *ngx_http_v2_create_headers_frame(
     ngx_http_request_t *r, u_char *pos, u_char *end, ngx_uint_t fin);
 static ngx_http_v2_out_frame_t *ngx_http_v2_create_push_frame(
@@ -172,7 +136,7 @@ ngx_http_v2_header_filter(ngx_http_request_t *r)
     u_char                     status, *pos, *start, *p;
     size_t                     len;
     ngx_str_t                  host, location;
-    ngx_uint_t                 i, port;
+    ngx_uint_t                 i, port, fin;
     ngx_list_part_t           *part;
     ngx_table_elt_t           *header;
     ngx_connection_t          *fc;
@@ -671,7 +635,10 @@ ngx_http_v2_header_filter(ngx_http_request_t *r)
         pos = ngx_cpymem(pos, header[i].value.data, header[i].value.len);
     }
 
-    frame = ngx_http_v2_create_headers_frame(r, start, pos, r->header_only);
+    fin = r->header_only
+          || (r->headers_out.content_length_n == 0 && !r->expect_trailers);
+
+    frame = ngx_http_v2_create_headers_frame(r, start, pos, fin);
     if (frame == NULL) {
         return NGX_ERROR;
     }
@@ -969,15 +936,15 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
 
     ph = ngx_http_v2_push_headers;
 
+    len = ngx_max(r->schema.len, path->len);
+
     if (binary[0].len) {
-        tmp = ngx_palloc(r->pool, path->len);
+        tmp = ngx_palloc(r->pool, len);
         if (tmp == NULL) {
             return NGX_ERROR;
         }
 
     } else {
-        len = path->len;
-
         for (i = 0; i < NGX_HTTP_V2_PUSH_HEADERS; i++) {
             h = (ngx_table_elt_t **) ((char *) &r->headers_in + ph[i].offset);
 
@@ -1019,7 +986,7 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
     len = (h2c->table_update ? 1 : 0)
           + 1
           + 1 + NGX_HTTP_V2_INT_OCTETS + path->len
-          + 1;
+          + 1 + NGX_HTTP_V2_INT_OCTETS + r->schema.len;
 
     for (i = 0; i < NGX_HTTP_V2_PUSH_HEADERS; i++) {
         len += binary[i].len;
@@ -1050,18 +1017,20 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
     *pos++ = ngx_http_v2_inc_indexed(NGX_HTTP_V2_PATH_INDEX);
     pos = ngx_http_v2_write_value(pos, path->data, path->len, tmp);
 
-#if (NGX_HTTP_SSL)
-    if (fc->ssl) {
-        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, fc->log, 0,
-                       "http2 push header: \":scheme: https\"");
+    ngx_log_debug1(NGX_LOG_DEBUG_HTTP, fc->log, 0,
+                   "http2 push header: \":scheme: %V\"", &r->schema);
+
+    if (r->schema.len == 5 && ngx_strncmp(r->schema.data, "https", 5) == 0) {
         *pos++ = ngx_http_v2_indexed(NGX_HTTP_V2_SCHEME_HTTPS_INDEX);
 
-    } else
-#endif
+    } else if (r->schema.len == 4
+               && ngx_strncmp(r->schema.data, "http", 4) == 0)
     {
-        ngx_log_debug0(NGX_LOG_DEBUG_HTTP, fc->log, 0,
-                       "http2 push header: \":scheme: http\"");
         *pos++ = ngx_http_v2_indexed(NGX_HTTP_V2_SCHEME_HTTP_INDEX);
+
+    } else {
+        *pos++ = ngx_http_v2_inc_indexed(NGX_HTTP_V2_SCHEME_HTTP_INDEX);
+        pos = ngx_http_v2_write_value(pos, r->schema.data, r->schema.len, tmp);
     }
 
     for (i = 0; i < NGX_HTTP_V2_PUSH_HEADERS; i++) {
@@ -1095,28 +1064,6 @@ ngx_http_v2_push_resource(ngx_http_request_t *r, ngx_str_t *path,
     }
 
     return NGX_ERROR;
-}
-
-
-static u_char *
-ngx_http_v2_write_int(u_char *pos, ngx_uint_t prefix, ngx_uint_t value)
-{
-    if (value < prefix) {
-        *pos++ |= value;
-        return pos;
-    }
-
-    *pos++ |= prefix;
-    value -= prefix;
-
-    while (value >= 128) {
-        *pos++ = value % 128 + 128;
-        value /= 128;
-    }
-
-    *pos++ = (u_char) value;
-
-    return pos;
 }
 
 
@@ -1216,9 +1163,9 @@ ngx_http_v2_create_headers_frame(ngx_http_request_t *r, u_char *pos,
         cl->next = NULL;
         frame->last = cl;
 
-        ngx_log_debug3(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
-                       "http2:%ui create HEADERS frame %p: len:%uz",
-                       stream->node->id, frame, frame->length);
+        ngx_log_debug4(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
+                       "http2:%ui create HEADERS frame %p: len:%uz fin:%ui",
+                       stream->node->id, frame, frame->length, fin);
 
         return frame;
     }
@@ -1487,7 +1434,7 @@ ngx_http_v2_send_chain(ngx_connection_t *fc, ngx_chain_t *in, off_t limit)
         in = in->next;
     }
 
-    if (in == NULL) {
+    if (in == NULL || stream->out_closed) {
 
         if (stream->queued) {
             fc->write->active = 1;
