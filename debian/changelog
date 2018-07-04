@@ -1,3 +1,9 @@
+nginx (1.15.1.xenial.rg1-1ubuntu1) xenial; urgency=medium
+
+  * Update to nginx 1.15.1
+
+ -- Eric Webster <sophomeric@gmail.com>  Wed, 04 Jul 2018 08:00:48 +0000
+
 nginx (1.15.0.xenial.rg1-1ubuntu1) xenial; urgency=medium
 
   * Update to nginx 1.15.0
