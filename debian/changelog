@@ -1,3 +1,10 @@
+nginx (1.15.2.xenial.rg1-1ubuntu1) xenial; urgency=medium
+
+  * Update to nginx 1.15.2
+  * Update fancyindex module to 0.4.3
+
+ -- Eric Webster <sophomeric@gmail.com>  Thu, 26 Jul 2018 07:49:38 +0000
+
 nginx (1.15.1.xenial.rg1-1ubuntu1) xenial; urgency=medium
 
   * Update to nginx 1.15.1
