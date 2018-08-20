@@ -23,6 +23,7 @@ README for Modules versions
  nginx-lua
   Homepage: https://github.com/openresty/lua-nginx-module
   Version: v0.10.13
+  Plus: https://github.com/openresty/lua-nginx-module/pull/1352
 
  nginx-upstream-fair
   Homepage: https://github.com/gnosek/nginx-upstream-fair
@@ -52,3 +53,7 @@ README for Modules versions
  ngx_http_substitutions_filter_module
   Homepage: https://github.com/yaoweibin/ngx_http_substitutions_filter_module
   Version: v0.6.4
+
+ ngx_http_geoip2_module
+  Homepage: https://github.com/leev/ngx_http_geoip2_module/
+  Version: 3.0

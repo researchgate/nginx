@@ -1,3 +1,10 @@
+nginx (1.15.2.xenial.rg2) xenial; urgency=medium
+
+  * Add ngx_http_geoip2_module (https://github.com/leev/ngx_http_geoip2_module/)
+  * Apply nginx-lua fix (https://github.com/openresty/lua-nginx-module/pull/1352)
+
+ -- Eric Webster <sophomeric@gmail.com>  Mon, 20 Aug 2018 13:52:28 +0000
+
 nginx (1.15.2.xenial.rg1-1ubuntu1) xenial; urgency=medium
 
   * Update to nginx 1.15.2
