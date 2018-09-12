@@ -1,3 +1,9 @@
+nginx (1.15.3.xenial.rg1) xenial; urgency=medium
+
+  * Update to nginx 1.15.3
+
+ -- Eric Webster <sophomeric@gmail.com>  Wed, 12 Sep 2018 14:49:58 +0000
+
 nginx (1.15.2.xenial.rg2) xenial; urgency=medium
 
   * Add ngx_http_geoip2_module (https://github.com/leev/ngx_http_geoip2_module/)
