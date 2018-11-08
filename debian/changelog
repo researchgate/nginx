@@ -1,3 +1,10 @@
+nginx (1.15.6.xenial.rg1) xenial; urgency=medium
+
+  * Update to nginx 1.15.6
+  * Update geoipv2 module from 3.0 to 3.2
+
+ -- Eric Webster <sophomeric@gmail.com>  Thu, 08 Nov 2018 09:41:11 +0000
+
 nginx (1.15.3.xenial.rg1) xenial; urgency=medium
 
   * Update to nginx 1.15.3
