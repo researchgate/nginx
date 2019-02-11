@@ -6,7 +6,7 @@ TEMP =		tmp
 
 CC =		cl
 OBJS =		objs.msvc8
-OPENSSL =	openssl-1.0.2p
+OPENSSL =	openssl-1.0.2q
 ZLIB =		zlib-1.2.11
 PCRE =		pcre-8.42
 
@@ -65,7 +65,6 @@ win32:
 		--with-cc-opt=-DFD_SETSIZE=1024				\
 		--with-pcre=$(OBJS)/lib/$(PCRE)				\
 		--with-zlib=$(OBJS)/lib/$(ZLIB)				\
-		--with-select_module					\
 		--with-http_v2_module					\
 		--with-http_realip_module				\
 		--with-http_addition_module				\

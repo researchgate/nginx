@@ -68,6 +68,7 @@ static void ngx_ssl_session_rbtree_insert_value(ngx_rbtree_node_t *temp,
 static int ngx_ssl_session_ticket_key_callback(ngx_ssl_conn_t *ssl_conn,
     unsigned char *name, unsigned char *iv, EVP_CIPHER_CTX *ectx,
     HMAC_CTX *hctx, int enc);
+static void ngx_ssl_session_ticket_keys_cleanup(void *data);
 #endif
 
 #ifndef X509_CHECK_FLAG_ALWAYS_CHECK_SUBJECT
@@ -946,10 +947,13 @@ ngx_ssl_read_password_file(ngx_conf_t *cf, ngx_str_t *file)
         return NULL;
     }
 
-    cln = ngx_pool_cleanup_add(cf->temp_pool, 0);
     passwords = ngx_array_create(cf->temp_pool, 4, sizeof(ngx_str_t));
+    if (passwords == NULL) {
+        return NULL;
+    }
 
-    if (cln == NULL || passwords == NULL) {
+    cln = ngx_pool_cleanup_add(cf->temp_pool, 0);
+    if (cln == NULL) {
         return NULL;
     }
 
@@ -1051,7 +1055,7 @@ cleanup:
                            ngx_close_file_n " \"%s\" failed", file->data);
     }
 
-    ngx_memzero(buf, NGX_SSL_PASSWORD_BUFFER_SIZE);
+    ngx_explicit_memzero(buf, NGX_SSL_PASSWORD_BUFFER_SIZE);
 
     return passwords;
 }
@@ -1068,7 +1072,7 @@ ngx_ssl_passwords_cleanup(void *data)
     pwd = passwords->elts;
 
     for (i = 0; i < passwords->nelts; i++) {
-        ngx_memzero(pwd[i].data, pwd[i].len);
+        ngx_explicit_memzero(pwd[i].data, pwd[i].len);
     }
 }
 
@@ -1839,6 +1843,10 @@ ngx_ssl_recv_early(ngx_connection_t *c, u_char *buf, size_t size)
         buf += 1;
     }
 
+    if (c->ssl->write_blocked) {
+        return NGX_AGAIN;
+    }
+
     /*
      * SSL_read_early_data() may return data in parts, so try to read
      * until SSL_read_early_data() would return no data
@@ -2339,6 +2347,11 @@ ngx_ssl_write_early(ngx_connection_t *c, u_char *data, size_t size)
             ngx_post_event(c->read, &ngx_posted_events);
         }
 
+        if (c->ssl->write_blocked) {
+            c->ssl->write_blocked = 0;
+            ngx_post_event(c->read, &ngx_posted_events);
+        }
+
         c->sent += written;
 
         return written;
@@ -2352,6 +2365,9 @@ ngx_ssl_write_early(ngx_connection_t *c, u_char *data, size_t size)
 
     if (sslerr == SSL_ERROR_WANT_WRITE) {
 
+        ngx_log_debug0(NGX_LOG_DEBUG_EVENT, c->log, 0,
+                       "SSL_write_early_data: want write");
+
         if (c->ssl->saved_read_handler) {
 
             c->read->handler = c->ssl->saved_read_handler;
@@ -2364,6 +2380,14 @@ ngx_ssl_write_early(ngx_connection_t *c, u_char *data, size_t size)
 
             ngx_post_event(c->read, &ngx_posted_events);
         }
+
+        /*
+         * OpenSSL 1.1.1a fails to handle SSL_read_early_data()
+         * if an SSL_write_early_data() call blocked on writing,
+         * see https://github.com/openssl/openssl/issues/7757
+         */
+
+        c->ssl->write_blocked = 1;
 
         c->write->ready = 0;
         return NGX_AGAIN;
@@ -2904,7 +2928,7 @@ ngx_ssl_session_id_context(ngx_ssl_t *ssl, ngx_str_t *sess_ctx)
 
     if (EVP_DigestFinal_ex(md, buf, &len) == 0) {
         ngx_ssl_error(NGX_LOG_EMERG, ssl->log, 0,
-                      "EVP_DigestUpdate() failed");
+                      "EVP_DigestFinal_ex() failed");
         goto failed;
     }
 
@@ -3435,6 +3459,7 @@ ngx_ssl_session_ticket_keys(ngx_conf_t *cf, ngx_ssl_t *ssl, ngx_array_t *paths)
     ngx_uint_t                     i;
     ngx_array_t                   *keys;
     ngx_file_info_t                fi;
+    ngx_pool_cleanup_t            *cln;
     ngx_ssl_session_ticket_key_t  *key;
 
     if (paths == NULL) {
@@ -3446,6 +3471,14 @@ ngx_ssl_session_ticket_keys(ngx_conf_t *cf, ngx_ssl_t *ssl, ngx_array_t *paths)
     if (keys == NULL) {
         return NGX_ERROR;
     }
+
+    cln = ngx_pool_cleanup_add(cf->pool, 0);
+    if (cln == NULL) {
+        return NGX_ERROR;
+    }
+
+    cln->handler = ngx_ssl_session_ticket_keys_cleanup;
+    cln->data = keys;
 
     path = paths->elts;
     for (i = 0; i < paths->nelts; i++) {
@@ -3518,6 +3551,8 @@ ngx_ssl_session_ticket_keys(ngx_conf_t *cf, ngx_ssl_t *ssl, ngx_array_t *paths)
             ngx_log_error(NGX_LOG_ALERT, cf->log, ngx_errno,
                           ngx_close_file_n " \"%V\" failed", &file.name);
         }
+
+        ngx_explicit_memzero(&buf, 80);
     }
 
     if (SSL_CTX_set_ex_data(ssl->ctx, ngx_ssl_session_ticket_keys_index, keys)
@@ -3547,6 +3582,8 @@ failed:
         ngx_log_error(NGX_LOG_ALERT, cf->log, ngx_errno,
                       ngx_close_file_n " \"%V\" failed", &file.name);
     }
+
+    ngx_explicit_memzero(&buf, 80);
 
     return NGX_ERROR;
 }
@@ -3674,6 +3711,16 @@ ngx_ssl_session_ticket_key_callback(ngx_ssl_conn_t *ssl_conn,
 
         return (i == 0) ? 1 : 2 /* renew */;
     }
+}
+
+
+static void
+ngx_ssl_session_ticket_keys_cleanup(void *data)
+{
+    ngx_array_t  *keys = data;
+
+    ngx_explicit_memzero(keys->elts,
+                         keys->nelts * sizeof(ngx_ssl_session_ticket_key_t));
 }
 
 #else
