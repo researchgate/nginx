@@ -1,3 +1,31 @@
+nginx (1.15.8.bionic.rg6) bionic; urgency=medium
+
+  * Go back to libluajit-5.1
+  * Require both liblua5.1-0-dev and libluajit-5.1-dev
+    + bionic seems to have issues building on launchpad otherwise
+
+ -- Eric Webster <sophomeric@gmail.com>  Mon, 11 Feb 2019 11:12:07 +0000
+
+nginx (1.15.8.bionic.rg3) bionic; urgency=medium
+
+  * Add missing nginx-auth-ldap
+
+ -- Eric Webster <sophomeric@gmail.com>  Mon, 11 Feb 2019 10:56:57 +0000
+
+nginx (1.15.8.bionic.rg2) bionic; urgency=medium
+
+  * Fix liblua-dev package name for build depends
+
+ -- Eric Webster <sophomeric@gmail.com>  Mon, 11 Feb 2019 10:18:53 +0000
+
+nginx (1.15.8.bionic.rg1) bionic; urgency=medium
+
+  * Update to nginx 1.15.8
+  * Update nginx-dav-ext-module to v3.0.0
+  * Change Lua dependencies from 5.1 to 5.3
+
+ -- Eric Webster <sophomeric@gmail.com>  Mon, 11 Feb 2019 09:49:12 +0000
+
 nginx (1.15.6.xenial.rg1) xenial; urgency=medium
 
   * Update to nginx 1.15.6
