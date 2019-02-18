@@ -16,7 +16,8 @@ Build-Depends: autotools-dev,
                libgd-dev,
                libgeoip-dev,
                libldap2-dev,
-               libluajit-5.1-dev,
+               liblua5.1-0-dev [!i386 !amd64 !kfreebsd-i386 !armel !armhf !powerpc !powerpcspe !mips !mipsel],
+               libluajit-5.1-dev [i386 amd64 kfreebsd-i386 armel armhf powerpc powerpcspe mips mipsel],
                libmhash-dev,
                libossp-uuid-dev,
                libmaxminddb-dev,
@@ -26,6 +27,7 @@ Build-Depends: autotools-dev,
                libssl-dev (>= 1.1.0),
                libxslt1-dev,
                po-debconf,
+               quilt,
                zlib1g-dev
 Standards-Version: 3.9.6.0
 Homepage: http://nginx.net

@@ -1,3 +1,9 @@
+nginx (1.15.8.bionic.rg14) bionic; urgency=medium
+
+  * Add patch for detecting luajit 2.1
+
+ -- Eric Webster <sophomeric@gmail.com>  Mon, 18 Feb 2019 08:59:00 +0000
+
 nginx (1.15.8.bionic.rg6) bionic; urgency=medium
 
   * Go back to libluajit-5.1
