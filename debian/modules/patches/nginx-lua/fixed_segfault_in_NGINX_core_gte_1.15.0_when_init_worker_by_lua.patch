@@ -1,0 +1,33 @@
+From 799bb14a6833e524ae5dee0ce2eb23a9d78d616c Mon Sep 17 00:00:00 2001
+From: Datong Sun <dndx@idndx.com>
+Date: Wed, 18 Jul 2018 16:21:09 -0700
+Subject: [PATCH] bugfix: fixed segfault in NGINX core >= 1.15.0 when
+ init_worker_by_lua* is used.
+
+---
+ src/ngx_http_lua_initworkerby.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/ngx_http_lua_initworkerby.c b/src/ngx_http_lua_initworkerby.c
+index 4a722a062..2a82fcb9f 100644
+--- a/src/ngx_http_lua_initworkerby.c
++++ b/src/ngx_http_lua_initworkerby.c
+@@ -25,6 +25,7 @@ ngx_http_lua_init_worker(ngx_cycle_t *cycle)
+     void                        *cur, *prev;
+     ngx_uint_t                   i;
+     ngx_conf_t                   conf;
++    ngx_conf_file_t              cf_file;
+     ngx_cycle_t                 *fake_cycle;
+     ngx_module_t               **modules;
+     ngx_open_file_t             *file, *ofile;
+@@ -166,6 +167,10 @@ ngx_http_lua_init_worker(ngx_cycle_t *cycle)
+     conf.pool = fake_cycle->pool;
+     conf.log = cycle->log;
+ 
++    ngx_memzero(&cf_file, sizeof(cf_file));
++    cf_file.file.name = cycle->conf_file;
++    conf.conf_file = &cf_file;
++
+     http_ctx.loc_conf = ngx_pcalloc(conf.pool,
+                                     sizeof(void *) * ngx_http_max_module);
+     if (http_ctx.loc_conf == NULL) {

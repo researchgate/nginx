@@ -1,1 +1,2 @@
 discover-luajit-2.1.patch
+fixed_segfault_in_NGINX_core_gte_1.15.0_when_init_worker_by_lua.patch

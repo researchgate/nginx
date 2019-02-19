@@ -1,3 +1,9 @@
+nginx (1.15.8.bionic.rg15) bionic; urgency=medium
+
+  * Moved nginx-lua patch to quilt patches instead of being inline applied.
+
+ -- Eric Webster <sophomeric@gmail.com>  Tue, 19 Feb 2019 11:25:53 +0000
+
 nginx (1.15.8.bionic.rg14) bionic; urgency=medium
 
   * Add patch for detecting luajit 2.1
