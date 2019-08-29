@@ -1,3 +1,9 @@
+nginx (1.17.3.bionic.rg2) bionic; urgency=medium
+
+  * Update to nginx 1.17.3
+
+ -- Stefan Warten <stefan.warten@researchgate.net>  Thu, 15 Aug 2019 10:32:11 +0000
+
 nginx (1.15.8.bionic.rg15) bionic; urgency=medium
 
   * Moved nginx-lua patch to quilt patches instead of being inline applied.
