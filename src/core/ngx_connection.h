@@ -45,8 +45,6 @@ struct ngx_listening_s {
     size_t              pool_size;
     /* should be here because of the AcceptEx() preread */
     size_t              post_accept_buffer_size;
-    /* should be here because of the deferred accept */
-    ngx_msec_t          post_accept_timeout;
 
     ngx_listening_t    *previous;
     ngx_connection_t   *connection;
@@ -147,8 +145,7 @@ struct ngx_connection_s {
     socklen_t           socklen;
     ngx_str_t           addr_text;
 
-    ngx_str_t           proxy_protocol_addr;
-    in_port_t           proxy_protocol_port;
+    ngx_proxy_protocol_t  *proxy_protocol;
 
 #if (NGX_SSL || NGX_COMPAT)
     ngx_ssl_connection_t  *ssl;

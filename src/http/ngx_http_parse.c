@@ -380,6 +380,12 @@ ngx_http_parse_request_line(ngx_http_request_t *r, ngx_buf_t *b)
                 r->uri_start = p;
                 state = sw_after_slash_in_uri;
                 break;
+            case '?':
+                r->uri_start = p;
+                r->args_start = p + 1;
+                r->empty_path_in_uri = 1;
+                state = sw_uri;
+                break;
             case ' ':
                 /*
                  * use single "/" from request line to preserve pointers,
@@ -445,6 +451,13 @@ ngx_http_parse_request_line(ngx_http_request_t *r, ngx_buf_t *b)
                 r->port_end = p;
                 r->uri_start = p;
                 state = sw_after_slash_in_uri;
+                break;
+            case '?':
+                r->port_end = p;
+                r->uri_start = p;
+                r->args_start = p + 1;
+                r->empty_path_in_uri = 1;
+                state = sw_uri;
                 break;
             case ' ':
                 r->port_end = p;
@@ -912,6 +925,8 @@ ngx_http_parse_header_line(ngx_http_request_t *r, ngx_buf_t *b,
                         i = 1;
 
                     } else {
+                        hash = 0;
+                        i = 0;
                         r->invalid_header = 1;
                     }
 
@@ -922,6 +937,8 @@ ngx_http_parse_header_line(ngx_http_request_t *r, ngx_buf_t *b,
                     return NGX_HTTP_PARSE_INVALID_HEADER;
                 }
 
+                hash = 0;
+                i = 0;
                 r->invalid_header = 1;
 
                 break;
@@ -1283,6 +1300,10 @@ ngx_http_parse_complex_uri(ngx_http_request_t *r, ngx_uint_t merge_slashes)
     r->uri_ext = NULL;
     r->args_start = NULL;
 
+    if (r->empty_path_in_uri) {
+        *u++ = '/';
+    }
+
     ch = *p++;
 
     while (p <= r->uri_end) {
@@ -1437,9 +1458,11 @@ ngx_http_parse_complex_uri(ngx_http_request_t *r, ngx_uint_t merge_slashes)
                 state = sw_quoted;
                 break;
             case '?':
+                u--;
                 r->args_start = p;
                 goto args;
             case '#':
+                u--;
                 goto done;
             case '+':
                 r->plus_in_uri = 1;
@@ -1467,8 +1490,9 @@ ngx_http_parse_complex_uri(ngx_http_request_t *r, ngx_uint_t merge_slashes)
             case '\\':
 #endif
             case '/':
-                state = sw_slash;
-                u -= 5;
+            case '?':
+            case '#':
+                u -= 4;
                 for ( ;; ) {
                     if (u < r->uri.data) {
                         return NGX_HTTP_PARSE_INVALID_REQUEST;
@@ -1479,16 +1503,19 @@ ngx_http_parse_complex_uri(ngx_http_request_t *r, ngx_uint_t merge_slashes)
                     }
                     u--;
                 }
+                if (ch == '?') {
+                    r->args_start = p;
+                    goto args;
+                }
+                if (ch == '#') {
+                    goto done;
+                }
+                state = sw_slash;
                 break;
             case '%':
                 quoted_state = state;
                 state = sw_quoted;
                 break;
-            case '?':
-                r->args_start = p;
-                goto args;
-            case '#':
-                goto done;
             case '+':
                 r->plus_in_uri = 1;
                 /* fall through */
@@ -1558,6 +1585,30 @@ ngx_http_parse_complex_uri(ngx_http_request_t *r, ngx_uint_t merge_slashes)
             }
 
             return NGX_HTTP_PARSE_INVALID_REQUEST;
+        }
+    }
+
+    if (state == sw_quoted || state == sw_quoted_second) {
+        return NGX_HTTP_PARSE_INVALID_REQUEST;
+    }
+
+    if (state == sw_dot) {
+        u--;
+
+    } else if (state == sw_dot_dot) {
+        u -= 4;
+
+        for ( ;; ) {
+            if (u < r->uri.data) {
+                return NGX_HTTP_PARSE_INVALID_REQUEST;
+            }
+
+            if (*u == '/') {
+                u++;
+                break;
+            }
+
+            u--;
         }
     }
 
@@ -2268,6 +2319,9 @@ ngx_http_parse_chunked(ngx_http_request_t *r, ngx_buf_t *b,
                 break;
             case LF:
                 state = sw_chunk_start;
+                break;
+            default:
+                goto invalid;
             }
             break;
 

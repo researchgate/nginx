@@ -119,6 +119,9 @@ struct ngx_http_v2_connection_s {
     ngx_connection_t                *connection;
     ngx_http_connection_t           *http_connection;
 
+    off_t                            total_bytes;
+    off_t                            payload_bytes;
+
     ngx_uint_t                       processing;
     ngx_uint_t                       frames;
     ngx_uint_t                       idle;
@@ -153,6 +156,8 @@ struct ngx_http_v2_connection_s {
 
     ngx_uint_t                       last_sid;
     ngx_uint_t                       last_push;
+
+    time_t                           lingering_time;
 
     unsigned                         closed_nodes:8;
     unsigned                         settings_ack:1;
